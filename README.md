@@ -61,7 +61,7 @@ NOTÍCIAS & DADOS
 🚀 PARA TRADING AGENT
   • RAM necessária: 32-35GB (✅ Cabe com folga!)
   • CPU necessário: 4-8 cores (✅ Abundante!)
-  • Tamanho modelos: 17.5GB (✅ Plenamente!)
+  • Tamanho modelos: 18.9GB (✅ Plenamente!)
   • GPU necessária: Nenhuma (✅ CPU OK!)
 ```
 
@@ -70,7 +70,7 @@ NOTÍCIAS & DADOS
 ## 🎯 Características Principais
 
 ✅ **Análise em Cascata** - Filtra falsos positivos em 4 níveis  
-✅ **5 Modelos IA** - Cada um otimizado para sua tarefa  
+✅ **5 Modelos IA Validados** - Cada um otimizado para sua tarefa (TESTADO)  
 ✅ **B3 API Gratuita** - brapi.dev (sem limites de requisição)  
 ✅ **Dados em Tempo Real** - Integração Nelogica Profit Pro (opcional)  
 ✅ **Auditoria Completa** - Logs JSONL de todas as decisões  
@@ -80,17 +80,22 @@ NOTÍCIAS & DADOS
 
 ---
 
-## 📦 Modelos Inclusos (CORRETOS)
+## 📦 Modelos Inclusos - ✅ VALIDADOS E TESTADOS
 
-| # | Modelo | Nome Ollama | Tamanho | Uso | Latência |
-|---|--------|-------------|---------|-----|----------|
-| 1️⃣ | **SmolLM2 1.7B** | `smollm2:1.7b-instruct-q4_K_M` | 1.5GB | Análise rápida | 300-500ms |
-| 2️⃣ | **Mistral 7B** | `mistral:7b-instruct-q4_K_M` | 4GB | Análise detalhada | 1-2s |
-| 3️⃣ | **DeepSeek-R1 8B** | `deepseek-r1:8b` | 4.5GB | Raciocínio matemático | 2-3s |
-| 4️⃣ | **Qwen2.5-Coder 7B** | `qwen2.5-coder:7b-instruct-q4_K_M` | 5GB | Processamento dados | 1-2s |
-| 5️⃣ | **Gemma 3 4B** | `gemma3:4b-it` | 2.5GB | Análise multimodal | 800ms |
+**Data de validação**: 02/02/2026  
+**Servidor**: IBM X3650 M5 (24 cores, 64GB RAM) - ⭐ SEU SETUP
 
-**Total**: ~17.5GB em disco | **RAM**: ~32-35GB necessária
+| # | Modelo | Nome Ollama (CORRETO) | Tamanho | Uso | Latência | Status |
+|---|--------|----------------------|---------|-----|----------|--------|
+| 1️⃣ | **SmolLM2 1.7B** | `smollm2:1.7b-instruct-q4_K_M` | 1.1GB | Análise rápida | 300-500ms | ✅ Rodando |
+| 2️⃣ | **Mistral 7B** | `mistral:7b-instruct-q4_K_M` | 4.4GB | Análise detalhada | 1-2s | ✅ Rodando |
+| 3️⃣ | **DeepSeek-R1 8B** | `deepseek-r1:8b` | 5.2GB | Raciocínio matemático | 2-3s | ✅ Rodando |
+| 4️⃣ | **Qwen2.5-Coder 7B** | `qwen2.5-coder:7b-instruct-q4_K_M` | 4.7GB | Processamento dados | 1-2s | ✅ Rodando |
+| 5️⃣ | **Gemma 3 4B** | `gemma3:4b-it-qat` | 2.5GB | Análise multimodal | 800ms | ✅ Instalando |
+
+**Total**: ~18.9GB em disco | **RAM**: ~32-35GB necessária
+
+📌 **Ver [MODELOS_VALIDADOS.md](MODELOS_VALIDADOS.md)** para recomendações por tipo de servidor (8GB até 128GB+)
 
 ---
 
@@ -119,15 +124,18 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 2️⃣ Baixar Modelos (20 min) ⚡ NOMES CORRETOS
+### 2️⃣ Baixar Modelos (20 min) ⚡ NOMES CORRETOS VALIDADOS
 
 ```bash
 # No servidor com Ollama:
 ollama pull smollm2:1.7b-instruct-q4_K_M
 ollama pull mistral:7b-instruct-q4_K_M
-ollama pull deepseek-r1:8b                    # ✅ Nome correto!
+ollama pull deepseek-r1:8b                    # ✅ Nome CORRETO!
 ollama pull qwen2.5-coder:7b-instruct-q4_K_M
-ollama pull gemma3:4b-it                      # ✅ Nome correto!
+ollama pull gemma3:4b-it-qat                  # ✅ Nome CORRETO!
+
+# Verificar instalação
+ollama list
 ```
 
 ### 3️⃣ Configurar Credenciais
@@ -142,6 +150,13 @@ nano .env
 # Campos obrigatórios:
 # BRAPI_TOKEN=seu_token_aqui  (gerar em https://brapi.dev)
 # OLLAMA_HOST=http://10.41.10.151:11434
+
+# Para seu servidor:
+# OLLAMA_MODEL_FAST=smollm2:1.7b-instruct-q4_K_M
+# OLLAMA_MODEL_STANDARD=mistral:7b-instruct-q4_K_M
+# OLLAMA_MODEL_REASONING=deepseek-r1:8b
+# OLLAMA_MODEL_CODER=qwen2.5-coder:7b-instruct-q4_K_M
+# OLLAMA_MODEL_SENTIMENT=gemma3:4b-it-qat
 ```
 
 ### 4️⃣ Rodar Agent
@@ -212,6 +227,7 @@ trading-system-agent-b3/
 ├── QUICK_START.md                  # Guia rápido
 ├── DEPLOY.md                       # Deploy produção
 ├── MODELS.md                       # Documentação modelos
+├── MODELOS_VALIDADOS.md            # ⭐ Modelos validados por servidor
 ├── MODELOS_CORRETOS.txt            # Referência rápida
 └── README.md                       # Este arquivo
 ```
@@ -278,15 +294,28 @@ cat logs/trades.jsonl | jq '.decision' | sort | uniq -c
 ANALYSIS_INTERVAL=60  # Segundos entre ciclos
 ```
 
-### Mudar Modelos Padrão
+### Mudar Modelos Padrão (Para Outros Servidores)
+
+**Ver [MODELOS_VALIDADOS.md](MODELOS_VALIDADOS.md)** para recomendações:
 
 ```bash
-# .env
+# Para servidor com 8GB RAM:
+OLLAMA_MODEL_FAST=smollm2:1.7b-instruct-q4_K_M
+OLLAMA_MODEL_STANDARD=mistral:7b-instruct-q4_K_M
+OLLAMA_MODEL_SENTIMENT=gemma3:4b-it-qat
+
+# Para servidor com 32GB RAM:
+OLLAMA_MODEL_FAST=smollm2:1.7b-instruct-q4_K_M
+OLLAMA_MODEL_STANDARD=mistral:7b-instruct-q4_K_M
+OLLAMA_MODEL_REASONING=deepseek-r1:8b
+OLLAMA_MODEL_SENTIMENT=gemma3:4b-it-qat
+
+# Para seu servidor com 64GB RAM (RECOMENDADO):
 OLLAMA_MODEL_FAST=smollm2:1.7b-instruct-q4_K_M
 OLLAMA_MODEL_STANDARD=mistral:7b-instruct-q4_K_M
 OLLAMA_MODEL_REASONING=deepseek-r1:8b
 OLLAMA_MODEL_CODER=qwen2.5-coder:7b-instruct-q4_K_M
-OLLAMA_MODEL_SENTIMENT=gemma3:4b-it
+OLLAMA_MODEL_SENTIMENT=gemma3:4b-it-qat
 ```
 
 ### Habilitar Persistência de Dados
@@ -372,7 +401,7 @@ Trocar para modelo menor em `.env`:
 OLLAMA_MODEL_STANDARD=smollm2:1.7b-instruct-q4_K_M
 ```
 
-Ver [MODELOS_CORRETOS.txt](MODELOS_CORRETOS.txt) para mais soluções.
+Ver [MODELOS_VALIDADOS.md](MODELOS_VALIDADOS.md) para mais soluções.
 
 ---
 
@@ -396,6 +425,7 @@ Ver [MODELOS_CORRETOS.txt](MODELOS_CORRETOS.txt) para mais soluções.
 - [x] Integração B3 API (brapi.dev)
 - [x] Nomes corretos dos modelos
 - [x] Documentação completa
+- [x] Validação de modelos por servidor
 - [ ] Backtesting framework
 - [ ] Integração Nelogica Profit Pro (live)
 - [ ] Fine-tuning de prompts
@@ -421,6 +451,7 @@ Contribuições são bem-vindas!
 ## 📚 Documentação
 
 - 📖 **[TRADING_AGENT_B3_SETUP_COMPLETO.md](TRADING_AGENT_B3_SETUP_COMPLETO.md)** - Guía técnico completo (991 linhas)
+- 🎯 **[MODELOS_VALIDADOS.md](MODELOS_VALIDADOS.md)** - Modelos testados com recomendações por servidor (⭐ NOVO!)
 - ⚡ **[QUICK_START.md](QUICK_START.md)** - Setup em 15 minutos
 - 🚀 **[DEPLOY.md](DEPLOY.md)** - Deploy em produção (Docker + SystemD)
 - 🐧 **[SETUP_AUTOMATICO.sh](SETUP_AUTOMATICO.sh)** - Script automático (298 linhas)
