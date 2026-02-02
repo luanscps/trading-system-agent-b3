@@ -38,6 +38,35 @@ NOTÍCIAS & DADOS
 
 ---
 
+## 🖥️ Infraestrutura - HOMELAB
+
+### Servidor: IBM LENOVO X3650 M5
+
+```
+🐧 HARDWARE
+  • Modelo: 5462AC1 (Enterprise Server)
+  • CPU: 2x Intel Xeon E5-2670 v3 (24 cores total)
+  • RAM: 64GB DDR4 @ 2133MHz ECC
+  • Storage: ServeRAID M1215 RAID10 (638GB usável)
+  • Virtualização: PROXMOX v8.4
+  • Rede: MIKROTIK X64 Bridge + VLAN intranet
+
+🌟 RECURSOS DISPONÍVEIS
+  • CPU: 24 cores / 48 threads
+  • RAM: 64GB (45GB livres para Ollama)
+  • Storage: 638GB RAID10 (99.7% livre)
+  • Network: Intranet 1Gbps
+  • Power: 500W idle / 900W pico
+
+🚀 PARA TRADING AGENT
+  • RAM necessária: 32-35GB (✅ Cabe com folga!)
+  • CPU necessário: 4-8 cores (✅ Abundante!)
+  • Tamanho modelos: 17.5GB (✅ Plenamente!)
+  • GPU necessária: Nenhuma (✅ CPU OK!)
+```
+
+---
+
 ## 🎯 Características Principais
 
 ✅ **Análise em Cascata** - Filtra falsos positivos em 4 níveis  
@@ -69,7 +98,7 @@ NOTÍCIAS & DADOS
 
 ### Pré-requisitos
 
-- Docker running em `10.41.10.151:11434` (Ollama)
+- Ollama rodando em `10.41.10.151:11434` (ou local)
 - Python 3.11+
 - ~45GB RAM (recomendado)
 - ~20GB espaço em disco livre
@@ -82,10 +111,10 @@ git clone https://github.com/luanscps/trading-system-agent-b3.git
 cd trading-system-agent-b3
 
 # Setup automático
-bash setup.sh
+bash SETUP_AUTOMATICO.sh
 
 # Ou manual:
-python3 -m venv venv
+python3.11 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
@@ -93,7 +122,7 @@ pip install -r requirements.txt
 ### 2️⃣ Baixar Modelos (20 min) ⚡ NOMES CORRETOS
 
 ```bash
-# No servidor com Ollama (10.41.10.151):
+# No servidor com Ollama:
 ollama pull smollm2:1.7b-instruct-q4_K_M
 ollama pull mistral:7b-instruct-q4_K_M
 ollama pull deepseek-r1:8b                    # ✅ Nome correto!
@@ -170,33 +199,21 @@ trading-system-agent-b3/
 │       └── dashboard.py            # Grafana
 ├── config/
 │   ├── models.yaml                 # Config modelos
-│   ├── trading_rules.yaml          # Regras de trading
-│   └── prompts.yaml                # Prompts do agent
-├── data/
-│   ├── raw/                        # Dados brutos
-│   ├── processed/                  # Dados processados
-│   └── cache/                      # Cache de cotações
-├── logs/
-│   ├── trading-agent.log           # Log principal
-│   └── trades.jsonl                # Histórico de trades
-├── tests/
-│   ├── test_b3_api.py
-│   ├── test_models.py
-│   └── test_agents.py
-├── notebooks/
-│   └── analysis.ipynb              # Jupyter análise
+├── docs/
+│   ├── TRADING_AGENT_B3_SETUP_COMPLETO.md  # Guía técnico (991 linhas)
+├── logs/                           # Logs de trading
+├── data/                           # Dados persistentes
 ├── .env.example                    # Template .env
 ├── .gitignore
 ├── Dockerfile                      # Container
-├── docker-compose.yml              # Orquestração
 ├── requirements.txt                # Dependências Python
-├── setup.sh                        # Setup automático
+├── SETUP_AUTOMATICO.sh             # Setup automático (298 linhas)
+├── COMANDOS_PRONTOS.sh             # Blocos prontos (434 linhas)
 ├── QUICK_START.md                  # Guia rápido
 ├── DEPLOY.md                       # Deploy produção
-├── ARCHITECTURE.md                 # Documentação técnica
-├── TROUBLESHOOTING.md              # Soluções
+├── MODELS.md                       # Documentação modelos
+├── MODELOS_CORRETOS.txt            # Referência rápida
 └── README.md                       # Este arquivo
-
 ```
 
 ---
@@ -250,30 +267,6 @@ grep "PETR4" logs/trading-agent.log
 cat logs/trades.jsonl | jq '.decision' | sort | uniq -c
 ```
 
-### Testar Análise em Cascata
-
-```python
-from src.models.ollama_models import OllamaModels
-from src.apis.b3_api import B3API
-
-ollama = OllamaModels()
-b3 = B3API()
-
-# 1️⃣ Sentimento (SmolLM2 - 300ms)
-sentiment = ollama.analyze_sentiment("SELIC sobe para 11.25%")
-print(f"Sentimento: {sentiment}")
-
-# 2️⃣ Técnica (Mistral - 1-2s)
-quote = b3.get_quote("PETR4")
-technical = ollama.analyze_technical(str(quote))
-print(f"Técnica: {technical}")
-
-# 3️⃣ Validação (DeepSeek - 2-3s)
-strategy = "Se sentimento > 75% E MACD > 0: COMPRAR"
-validation = ollama.validate_strategy(strategy)
-print(f"Validação: {validation}")
-```
-
 ---
 
 ## 🔧 Configuração Avançada
@@ -302,17 +295,6 @@ OLLAMA_MODEL_SENTIMENT=gemma3:4b-it
 # .env
 DATABASE_URL=postgresql://user:pass@localhost:5432/trading_db
 REDIS_URL=redis://localhost:6379/0
-```
-
-### Integrar com Broker Real
-
-Editar `src/apis/broker_api.py` com endpoints de seu broker:
-
-```python
-class BrokerAPI:
-    def execute_trade(self, ticker, side, quantity, price):
-        # Implementar integração com seu broker
-        pass
 ```
 
 ---
@@ -370,10 +352,10 @@ O agent expõe métricas em `http://localhost:8000/metrics`:
 
 ```bash
 # Verificar se Ollama está rodando
-ollama list
+curl http://10.41.10.151:11434/api/tags
 
 # Testar conexão
-curl http://10.41.10.151:11434/api/tags
+ollama list
 ```
 
 ### Erro: "ModuleNotFoundError"
@@ -383,18 +365,6 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Erro: "Model not found: deepseek-r1:7b-instruct-q4_K_M"
-
-**❌ INCORRETO** (modelo não existe)
-```bash
-ollama pull deepseek-r1:7b-instruct-q4_K_M  # NÃO FUNCIONA!
-```
-
-**✅ CORRETO** (use o nome exato)
-```bash
-ollama pull deepseek-r1:8b  # Nome correto!
-```
-
 ### Erro: "Out of memory"
 
 Trocar para modelo menor em `.env`:
@@ -402,7 +372,7 @@ Trocar para modelo menor em `.env`:
 OLLAMA_MODEL_STANDARD=smollm2:1.7b-instruct-q4_K_M
 ```
 
-Ver [TROUBLESHOOTING.md](TROUBLESHOOTING.md) para mais soluções.
+Ver [MODELOS_CORRETOS.txt](MODELOS_CORRETOS.txt) para mais soluções.
 
 ---
 
@@ -414,7 +384,7 @@ Ver [TROUBLESHOOTING.md](TROUBLESHOOTING.md) para mais soluções.
 | Throughput | ~1 ciclo/min | Customizável |
 | Taxa sucesso | ~85% | Modo simulado |
 | Uptime | 99.9% | Com Docker + SystemD |
-| Uso RAM | 32-35GB | Você tem 45GB ✓ |
+| Uso RAM | 32-35GB | Você tem 64GB ✓ |
 | Custo mensal | R$ 0,00 | 100% local |
 
 ---
@@ -425,6 +395,7 @@ Ver [TROUBLESHOOTING.md](TROUBLESHOOTING.md) para mais soluções.
 - [x] Análise em cascata (4 níveis)
 - [x] Integração B3 API (brapi.dev)
 - [x] Nomes corretos dos modelos
+- [x] Documentação completa
 - [ ] Backtesting framework
 - [ ] Integração Nelogica Profit Pro (live)
 - [ ] Fine-tuning de prompts
@@ -441,17 +412,21 @@ Contribuições são bem-vindas!
 
 1. Fork o projeto
 2. Crie uma branch (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add AmazingFeature'`)
+3. Commit suas mudanças (`git commit -m 'feat: add feature'`)
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
 ---
 
-## 📚 Documentação Adicional
+## 📚 Documentação
 
-- [Quick Start](QUICK_START.md) - Guia rápido (15 min)
-- [Deploy](DEPLOY.md) - Deploy em produção
-- [Troubleshooting](TROUBLESHOOTING.md) - Soluções de problemas
+- 📖 **[TRADING_AGENT_B3_SETUP_COMPLETO.md](TRADING_AGENT_B3_SETUP_COMPLETO.md)** - Guía técnico completo (991 linhas)
+- ⚡ **[QUICK_START.md](QUICK_START.md)** - Setup em 15 minutos
+- 🚀 **[DEPLOY.md](DEPLOY.md)** - Deploy em produção (Docker + SystemD)
+- 🐧 **[SETUP_AUTOMATICO.sh](SETUP_AUTOMATICO.sh)** - Script automático (298 linhas)
+- 📋 **[COMANDOS_PRONTOS.sh](COMANDOS_PRONTOS.sh)** - Blocos prontos (434 linhas)
+- 🧠 **[MODELS.md](MODELS.md)** - Documentação dos modelos
+- 📃 **[MODELOS_CORRETOS.txt](MODELOS_CORRETOS.txt)** - Referência rápida
 
 ---
 
@@ -480,4 +455,4 @@ Este projeto está sob licença MIT. Ver [LICENSE](LICENSE) para detalhes.
 
 **⭐ Se este projeto foi útil, deixe uma star! 🌟**
 
-Desenvolvido com ❤️ em Campinas, Brasil - 2026
+Desenvolvido com ❤️ - 2026
