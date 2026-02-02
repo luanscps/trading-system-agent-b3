@@ -51,17 +51,17 @@ NOTÍCIAS & DADOS
 
 ---
 
-## 📦 Modelos Inclusos
+## 📦 Modelos Inclusos (CORRETOS)
 
-| # | Modelo | Tamanho | Uso | Latência | Otimização |
-|---|--------|---------|-----|----------|------------|
-| 1️⃣ | **SmolLM2 1.7B** | 1.5GB | Análise rápida | 300-500ms | QuantQ4 |
-| 2️⃣ | **Mistral 7B** | 4GB | Análise detalhada | 1-2s | QuantQ4 |
-| 3️⃣ | **DeepSeek-R1 7B** | 4.5GB | Raciocínio matemático | 2-3s | QuantQ4 |
-| 4️⃣ | **Qwen2.5-Coder 7B** | 5GB | Processamento dados | 1-2s | QuantQ4 |
-| 5️⃣ | **Gemma3 4B** | 3.3GB | Análise multimodal | 2-4s | QuantQ4 |
+| # | Modelo | Nome Ollama | Tamanho | Uso | Latência |
+|---|--------|-------------|---------|-----|----------|
+| 1️⃣ | **SmolLM2 1.7B** | `smollm2:1.7b-instruct-q4_K_M` | 1.5GB | Análise rápida | 300-500ms |
+| 2️⃣ | **Mistral 7B** | `mistral:7b-instruct-q4_K_M` | 4GB | Análise detalhada | 1-2s |
+| 3️⃣ | **DeepSeek-R1 8B** | `deepseek-r1:8b` | 4.5GB | Raciocínio matemático | 2-3s |
+| 4️⃣ | **Qwen2.5-Coder 7B** | `qwen2.5-coder:7b-instruct-q4_K_M` | 5GB | Processamento dados | 1-2s |
+| 5️⃣ | **Gemma 3 4B** | `gemma3:4b-it` | 2.5GB | Análise multimodal | 800ms |
 
-**Total**: ~17GB em disco | **RAM**: ~32-35GB necessária
+**Total**: ~17.5GB em disco | **RAM**: ~32-35GB necessária
 
 ---
 
@@ -90,17 +90,15 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 2️⃣ Baixar Modelos (20 min)
+### 2️⃣ Baixar Modelos (20 min) ⚡ NOMES CORRETOS
 
 ```bash
 # No servidor com Ollama (10.41.10.151):
-docker exec ollama-mistral bash << 'EOF'
 ollama pull smollm2:1.7b-instruct-q4_K_M
 ollama pull mistral:7b-instruct-q4_K_M
-ollama pull deepseek-r1:7b-instruct-q4_K_M
+ollama pull deepseek-r1:8b                    # ✅ Nome correto!
 ollama pull qwen2.5-coder:7b-instruct-q4_K_M
-ollama pull gemma3:4b-it
-EOF
+ollama pull gemma3:4b-it                      # ✅ Nome correto!
 ```
 
 ### 3️⃣ Configurar Credenciais
@@ -194,6 +192,7 @@ trading-system-agent-b3/
 ├── requirements.txt                # Dependências Python
 ├── setup.sh                        # Setup automático
 ├── QUICK_START.md                  # Guia rápido
+├── DEPLOY.md                       # Deploy produção
 ├── ARCHITECTURE.md                 # Documentação técnica
 ├── TROUBLESHOOTING.md              # Soluções
 └── README.md                       # Este arquivo
@@ -292,7 +291,9 @@ ANALYSIS_INTERVAL=60  # Segundos entre ciclos
 # .env
 OLLAMA_MODEL_FAST=smollm2:1.7b-instruct-q4_K_M
 OLLAMA_MODEL_STANDARD=mistral:7b-instruct-q4_K_M
-# etc...
+OLLAMA_MODEL_REASONING=deepseek-r1:8b
+OLLAMA_MODEL_CODER=qwen2.5-coder:7b-instruct-q4_K_M
+OLLAMA_MODEL_SENTIMENT=gemma3:4b-it
 ```
 
 ### Habilitar Persistência de Dados
@@ -369,10 +370,10 @@ O agent expõe métricas em `http://localhost:8000/metrics`:
 
 ```bash
 # Verificar se Ollama está rodando
-docker exec ollama-mistral ollama list
+ollama list
 
-# Reiniciar
-docker restart ollama-mistral
+# Testar conexão
+curl http://10.41.10.151:11434/api/tags
 ```
 
 ### Erro: "ModuleNotFoundError"
@@ -380,6 +381,18 @@ docker restart ollama-mistral
 ```bash
 source venv/bin/activate
 pip install -r requirements.txt
+```
+
+### Erro: "Model not found: deepseek-r1:7b-instruct-q4_K_M"
+
+**❌ INCORRETO** (modelo não existe)
+```bash
+ollama pull deepseek-r1:7b-instruct-q4_K_M  # NÃO FUNCIONA!
+```
+
+**✅ CORRETO** (use o nome exato)
+```bash
+ollama pull deepseek-r1:8b  # Nome correto!
 ```
 
 ### Erro: "Out of memory"
@@ -411,6 +424,7 @@ Ver [TROUBLESHOOTING.md](TROUBLESHOOTING.md) para mais soluções.
 - [x] Setup completo com 5 modelos
 - [x] Análise em cascata (4 níveis)
 - [x] Integração B3 API (brapi.dev)
+- [x] Nomes corretos dos modelos
 - [ ] Backtesting framework
 - [ ] Integração Nelogica Profit Pro (live)
 - [ ] Fine-tuning de prompts
@@ -436,10 +450,8 @@ Contribuições são bem-vindas!
 ## 📚 Documentação Adicional
 
 - [Quick Start](QUICK_START.md) - Guia rápido (15 min)
-- [Arquitetura](ARCHITECTURE.md) - Documentação técnica
-- [API Reference](docs/API.md) - Referência de métodos
+- [Deploy](DEPLOY.md) - Deploy em produção
 - [Troubleshooting](TROUBLESHOOTING.md) - Soluções de problemas
-- [Modelos Ollama](docs/MODELS.md) - Detalhes de cada modelo
 
 ---
 
@@ -463,14 +475,6 @@ Este projeto está sob licença MIT. Ver [LICENSE](LICENSE) para detalhes.
 - [brapi.dev](https://brapi.dev/) - API B3 gratuita
 - [LangChain](https://langchain.com/) - Framework de agentes
 - [Prometheus](https://prometheus.io/) - Monitoramento
-
----
-
-## 📈 Estatísticas
-
-![GitHub stars](https://img.shields.io/github/stars/luanscps/trading-system-agent-b3?style=social)
-![GitHub forks](https://img.shields.io/github/forks/luanscps/trading-system-agent-b3?style=social)
-![GitHub watchers](https://img.shields.io/github/watchers/luanscps/trading-system-agent-b3?style=social)
 
 ---
 
