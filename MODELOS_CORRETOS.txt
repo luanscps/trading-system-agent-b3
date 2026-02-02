@@ -1,0 +1,102 @@
+================================================================================
+⚡ TRADING SYSTEM AGENT B3 - MODELOS OLLAMA CORRETOS
+================================================================================
+
+DATA DE VERIFICAÇÃO: 01/02/2026
+FONTE: Ollama Official Library (https://ollama.com/library)
+
+================================================================================
+✅ MODELOS CORRETOS E FUNCIONANDO
+================================================================================
+
+1️⃣  SMOLLM2 1.7B (Análise Rápida)
+    ✔ ollama pull smollm2:1.7b-instruct-q4_K_M
+    📄 Tamanho: 1.5GB
+    ⏱  Latência: 300-500ms
+    🚀 Status: Funcional ✅
+
+2️⃣  MISTRAL 7B (Análise Detalhada)
+    ✔ ollama pull mistral:7b-instruct-q4_K_M
+    📄 Tamanho: 4GB
+    ⏱  Latência: 1-2s
+    🚀 Status: Funcional ✅
+
+3️⃣  DEEPSEEK-R1 8B (Raciocínio Matemático) 💠 CRITÍCO
+    ✔ ollama pull deepseek-r1:8b
+    📄 Tamanho: 4.5GB
+    ⏱  Latência: 2-3s
+    🚀 Status: Funcional ✅
+    ⚠️  NÃO EXISTE: deepseek-r1:7b-instruct-q4_K_M (❌ Falso nome)
+
+4️⃣  QWEN2.5-CODER 7B (Processamento de Dados)
+    ✔ ollama pull qwen2.5-coder:7b-instruct-q4_K_M
+    📄 Tamanho: 5GB
+    ⏱  Latência: 1-2s
+    🚀 Status: Funcional ✅
+
+5️⃣  GEMMA3 4B (Análise de Sentimento) 💠 CRITÍCO
+    ✔ ollama pull gemma3:4b-it
+    📄 Tamanho: 2.5GB
+    ⏱  Latência: 800ms
+    🚀 Status: Funcional ✅
+    ⚠️  NÃO EXISTE: gemma3:4b (use gemma3:4b-it)
+
+================================================================================
+❌ MODELOS QUE NÃO EXISTEM / ESTÃO INCORRETOS
+================================================================================
+
+❌ deepseek-r1:7b-instruct-q4_K_M
+   📄 NÃO EXISTE no Ollama (01/02/2026)
+   ✅ USE: deepseek-r1:8b
+
+❌ gemma3:4b
+   ❌ INCOMPLETO (falta -it)
+   ✅ USE: gemma3:4b-it
+
+================================================================================
+📃 COMANDO PARA BAIXAR TODOS (CORRETOS)
+================================================================================
+
+ollama pull smollm2:1.7b-instruct-q4_K_M
+ollama pull mistral:7b-instruct-q4_K_M
+ollama pull deepseek-r1:8b
+ollama pull qwen2.5-coder:7b-instruct-q4_K_M
+ollama pull gemma3:4b-it
+
+TAMANHO TOTAL: 17.5GB
+TEMPO ESTIMADO: 20-30 minutos
+
+================================================================================
+📝 .ENV CORRETO
+================================================================================
+
+OLLAMA_HOST=http://10.41.10.151:11434
+OLLAMA_MODEL_FAST=smollm2:1.7b-instruct-q4_K_M
+OLLAMA_MODEL_STANDARD=mistral:7b-instruct-q4_K_M
+OLLAMA_MODEL_REASONING=deepseek-r1:8b
+OLLAMA_MODEL_CODER=qwen2.5-coder:7b-instruct-q4_K_M
+OLLAMA_MODEL_SENTIMENT=gemma3:4b-it
+
+================================================================================
+🐛 VERIFICAR MODELOS INSTALADOS
+================================================================================
+
+ollama list
+
+Saída esperada:
+  smollm2:1.7b-instruct-q4_K_M      1.5GB    ✅
+  mistral:7b-instruct-q4_K_M        4.0GB    ✅
+  deepseek-r1:8b                    4.5GB    ✅
+  qwen2.5-coder:7b-instruct-q4_K_M  5.0GB    ✅
+  gemma3:4b-it                      2.5GB    ✅
+
+================================================================================
+✅ DOCUMENTAÇÃO
+================================================================================
+
+Leia MODELS.md para detalhes completos sobre cada modelo.
+Leia QUICK_START.md para setup rápido.
+
+================================================================================
+Atualizado em: 02 de fevereiro de 2026 ⚡
+================================================================================
